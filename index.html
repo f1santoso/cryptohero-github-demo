@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crypto Hero Demo – AI Crypto Scanner</title>
+<style>
+:root{--bg:#f7f9fc;--card:#fff;--text:#1a2233;--muted:#5b6678;--line:#e4e9f2;--brand:#2563eb;--brand2:#1d4ed8;--bad:#dc2626;--good:#16a34a;--warn:#d97706}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+section{padding:48px 0}
+h2{font-size:1.6rem;text-align:center;margin-bottom:8px}
+.sub{text-align:center;color:var(--muted);margin-bottom:28px}
+.hero{text-align:center;padding:64px 0 40px;background:linear-gradient(180deg,#eaf1ff,var(--bg))}
+.avatar{width:84px;height:84px;border-radius:50%;background:#fff;border:3px solid var(--brand);display:flex;align-items:center;justify-content:center;font-size:2.6rem;margin:0 auto 16px;box-shadow:0 6px 18px rgba(37,99,235,.2)}
+.hero h1{font-size:2.4rem;margin-bottom:10px}
+.badge{display:inline-block;background:#e8f8ee;color:var(--good);border:1px solid #bfe8cd;padding:6px 14px;border-radius:999px;font-weight:600;font-size:.9rem;margin-bottom:16px}
+.dot{animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.tagline{max-width:720px;margin:0 auto;color:var(--muted);font-size:1.08rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 2px 8px rgba(20,30,60,.04)}
+.card h3{margin-bottom:12px;font-size:1.15rem}
+.chaos{border-top:4px solid var(--bad)}
+.solution{border-top:4px solid var(--good)}
+.card ul{list-style:none}
+.card li{padding:7px 0 7px 26px;position:relative;font-size:.95rem;border-bottom:1px dashed var(--line)}
+.card li:last-child{border:0}
+.chaos li::before{content:"✕";position:absolute;left:0;color:var(--bad);font-weight:700}
+.solution li::before{content:"✓";position:absolute;left:0;color:var(--good);font-weight:700}
+.cap .ico{font-size:2rem;margin-bottom:8px}
+.cap p{color:var(--muted);font-size:.93rem}
+.tag{display:inline-block;margin-top:10px;background:#eef3ff;color:var(--brand2);border-radius:6px;padding:2px 9px;font-size:.78rem;font-weight:600}
+.sim{max-width:680px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 8px 24px rgba(20,30,60,.08)}
+.sim-head{background:var(--brand);color:#fff;padding:12px 18px;font-weight:600;display:flex;justify-content:space-between;font-size:.95rem}
+.sim-head small{opacity:.85;font-weight:400}
+.btns{display:flex;gap:8px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line);background:#fbfcff}
+.btns button{flex:1;min-width:150px;border:1px solid var(--brand);background:#fff;color:var(--brand);padding:9px 12px;border-radius:8px;font-weight:600;cursor:pointer;font-size:.88rem;transition:.15s}
+.btns button:hover:not(:disabled){background:var(--brand);color:#fff}
+.btns button:disabled{opacity:.5;cursor:not-allowed}
+.chat{height:380px;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;background:#f3f6fb}
+.msg{max-width:88%;padding:10px 14px;border-radius:12px;font-size:.92rem;animation:in .3s ease;white-space:pre-line}
+.user{align-self:flex-end;background:var(--brand);color:#fff;border-bottom-right-radius:3px}
+.bot{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:3px}
+.bot b{color:var(--brand2)}
+.typing{display:flex;gap:4px;padding:14px}
+.typing span{width:7px;height:7px;background:#9aa6bb;border-radius:50%;animation:blink 1s infinite}
+.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{50%{opacity:.2}}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+.hint{color:var(--muted);text-align:center;margin:auto;font-size:.9rem}
+.note{text-align:center;color:var(--muted);font-size:.8rem;margin-top:10px}
+footer{background:#0f1b33;color:#cdd6e8;text-align:center;padding:48px 20px 28px}
+footer h2{color:#fff}
+.cta{display:inline-block;margin:18px 0;background:var(--brand);color:#fff;text-decoration:none;font-weight:700;padding:14px 32px;border-radius:10px;font-size:1.05rem;box-shadow:0 6px 18px rgba(37,99,235,.45);transition:.2s}
+.cta:hover{background:var(--brand2);transform:translateY(-2px)}
+.built{font-size:.88rem;margin-top:14px}
+.disc{font-size:.76rem;opacity:.7;max-width:640px;margin:10px auto 0}
+@media(max-width:760px){.grid2,.grid3{grid-template-columns:1fr}.hero h1{font-size:1.8rem}.btns button{min-width:100%}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="avatar">🦸</div>
+    <h1>Crypto Hero Demo</h1>
+    <div class="badge"><span class="dot">🟢</span> Status: Active &amp; Ready 24/7</div>
+    <p class="tagline">AI Assistant yang men-scan coin Crypto secara rutin setiap hari berdasarkan parameter yang sudah ditentukan, menampilkan hasilnya di Web Dashboard, dan mencatat jurnal serta hasil eksekusi ke Google Sheets untuk evaluasi.</p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>The Chaos vs The Solution</h2>
+    <p class="sub">Dari scan manual yang melelahkan menjadi proses otomatis yang terukur.</p>
+    <div class="grid2">
+      <div class="card chaos">
+        <h3>😵 The Chaos</h3>
+        <ul>
+          <li>Sinyal trading untuk beberapa koin bagus sering terlewat.</li>
+          <li>Scan market memakan waktu, harus diulang setiap hari, dan membosankan.</li>
+          <li>Tahap yang paling sering gagal: Scan Market, Identifikasi Sinyal, dan Periksa Risiko.</li>
+          <li>Sering tidak sempat memindai pada waktu yang tepat.</li>
+          <li>Tidak sempat membuka dashboard, sehingga hasil scan terlambat dilihat.</li>
+          <li>Ragu apakah koin benar-benar lolos kriteria yang ketat, valid, dan terukur risikonya; belum ada backtest, win rate, dan risk-reward.</li>
+        </ul>
+      </div>
+      <div class="card solution">
+        <h3>🚀 The Solution</h3>
+        <ul>
+          <li>Scan otomatis dan live setiap hari di jam yang paling tepat, dengan data dari trusted Crypto Exchange/Provider.</li>
+          <li>Scoring dan ranking maksimal 30 coin berdasarkan Market Cap, Volume, dan Berita Terkini.</li>
+          <li>Label "Layak Entry", "Pantau", atau "Lewati" lengkap dengan parameter Entry, aturan Exit, dan batas risiko.</li>
+          <li>Jurnal trading otomatis di Google Sheets, termasuk hitungan Win Rate dan Profit Factor.</li>
+          <li>Summary hasil scan dikirim otomatis ke Telegram.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:#fff">
+  <div class="wrap">
+    <h2>Core Capabilities</h2>
+    <p class="sub">Tiga kemampuan utama Crypto Hero Demo.</p>
+    <div class="grid3">
+      <div class="card cap">
+        <div class="ico">🔍</div>
+        <h3>Auto Scan &amp; Scoring</h3>
+        <p>Scan live harian dari trusted exchange/provider, lalu ranking maksimal 30 coin berdasarkan Market Cap, Volume, dan Berita Terkini.</p>
+        <span class="tag">Live Market Data</span>
+      </div>
+      <div class="card cap">
+        <div class="ico">📊</div>
+        <h3>Web Dashboard &amp; Jurnal Sheets</h3>
+        <p>Dashboard menampilkan jumlah coin discan, jumlah lolos, dan snapshot tanggal-jam. Jurnal, Win Rate, dan Profit Factor tercatat di Google Sheets.</p>
+        <span class="tag">Google Drive · Google Sheets</span>
+      </div>
+      <div class="card cap">
+        <div class="ico">✈️</div>
+        <h3>Telegram Auto-Summary</h3>
+        <p>Ringkasan hasil scan beserta parameternya dikirim otomatis, jadi hasil tetap terbaca meski tidak sempat membuka dashboard.</p>
+        <span class="tag">Telegram Notification</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Interactive Simulation</h2>
+    <p class="sub">Klik salah satu skenario untuk melihat cara kerja agen.</p>
+    <div class="sim">
+      <div class="sim-head"><span>🦸 Crypto Hero Demo</span><small>Data ilustrasi</small></div>
+      <div class="btns">
+        <button onclick="run(0)">🔍 Scan Market Hari Ini</button>
+        <button onclick="run(1)">📒 Jurnal &amp; Win Rate</button>
+        <button onclick="run(2)">✈️ Notifikasi Telegram</button>
+      </div>
+      <div class="chat" id="chat"><p class="hint">Pilih skenario di atas untuk memulai simulasi.</p></div>
+    </div>
+    <p class="note">Seluruh isi simulasi adalah contoh ilustrasi, bukan hasil scan nyata maupun klaim performa.</p>
+  </div>
+</section>
+
+<footer>
+  <h2>Tertarik atau Ingin Bertanya?</h2>
+  <p>Ngobrol langsung soal cara kerja dan kemungkinan pengembangannya.</p>
+  <a class="cta" href="https://t.me/feerdhauze" target="_blank" rel="noopener">Diskusi atau Tanya via Telegram</a>
+  <p class="built">Built with AI · AI Builder Bootcamp Showcase</p>
+  <p class="disc">Halaman ini hanya demonstrasi teknis dan bukan saran keuangan. Trading Crypto berisiko tinggi; keputusan dan eksekusi order sepenuhnya tanggung jawab pengguna.</p>
+</footer>
+
+<script>
+const scenarios = [
+  { q: "Scan market hari ini dan tampilkan hasilnya.",
+    a: [
+      "⏳ Mengambil data live dari trusted exchange/provider, lalu menghitung skor (Market Cap, Volume, Berita Terkini)...",
+      "<b>Snapshot Dashboard (contoh)</b>\nDiscan: 30 coin · Lolos kriteria: 7\n\n#1 BTC · Skor 91 · <b>Layak Entry</b>\n#2 ETH · Skor 86 · <b>Layak Entry</b>\n#3 SOL · Skor 78 · <b>Pantau</b>\n#4 XYZ · Skor 41 · <b>Lewati</b>",
+      "<b>Parameter coin Layak Entry (contoh)</b>\nEntry: breakout dengan konfirmasi volume\nExit: take profit di 2R, atau keluar jika sinyal batal\nBatas risiko: stop loss di bawah swing low, risiko maks 1% modal per posisi"
+    ] },
+  { q: "Catat jurnal hari ini dan hitung performanya.",
+    a: [
+      "⏳ Menghubungkan ke Google Drive dan membuka Google Sheets jurnal...",
+      "✅ Jurnal tercatat: tanggal, coin, skor, parameter entry/exit, batas risiko, dan hasil eksekusi.",
+      "<b>Rekap evaluasi (contoh)</b>\nTotal sinyal tercatat: 20\nWin Rate: dihitung otomatis dari hasil closed trade\nProfit Factor: total profit ÷ total loss\n\nData ini mulai membuktikan strategi lewat angka, bukan perasaan."
+    ] },
+  { q: "Kirim summary scan ke Telegram.",
+    a: [
+      "⏳ Menyusun ringkasan dan mengirim ke Telegram...",
+      "📨 <b>Telegram · Crypto Hero Demo</b>\n━━━━━━━━━━━━\n🗓 Snapshot: scan harian (contoh)\n🔎 Discan: 30 · ✅ Lolos: 7\n\n🥇 BTC · Skor 91 · Layak Entry\n🥈 ETH · Skor 86 · Layak Entry\n🥉 SOL · Skor 78 · Pantau\n\n📌 Entry: konfirmasi volume\n🎯 Exit: 2R\n🛑 Risiko maks: 1% modal\n━━━━━━━━━━━━\nDetail lengkap ada di Web Dashboard."
+    ] }
+];
+const chat = document.getElementById('chat');
+const btns = document.querySelectorAll('.btns button');
+const wait = ms => new Promise(r => setTimeout(r, ms));
+function add(cls, html) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + cls;
+  d.innerHTML = html;
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+  return d;
+}
+function typing() {
+  const d = document.createElement('div');
+  d.className = 'msg bot typing';
+  d.innerHTML = '<span></span><span></span><span></span>';
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+  return d;
+}
+async function run(i) {
+  btns.forEach(b => b.disabled = true);
+  chat.innerHTML = '';
+  add('user', scenarios[i].q);
+  for (const text of scenarios[i].a) {
+    await wait(500);
+    const t = typing();
+    await wait(1300);
+    t.remove();
+    add('bot', text);
+  }
+  btns.forEach(b => b.disabled = false);
+}
+</script>
+</body>
+</html>
